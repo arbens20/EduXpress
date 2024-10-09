@@ -1,0 +1,11 @@
+<h2>Créer un Chapitre</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="nom_chapitre">Nom du Chapitre:</label>
+    <input type="text" name="nom_chapitre" required>
+
+    <label for="description">Description:</label>
+    <textarea name="description" required></textarea>
+
+    <button type="submit">Créer</button>
+</form>

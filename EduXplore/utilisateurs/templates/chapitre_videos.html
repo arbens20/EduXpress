@@ -1,0 +1,13 @@
+<h1>Vidéos du chapitre : {{ chapitre.titre }}</h1>
+
+<ul>
+    {% for video in videos %}
+        <li>
+            <a href="{{ video.contenu.url }}">{{ video.titre }}</a>
+        </li>
+    {% empty %}
+        <p>Aucune vidéo disponible pour ce chapitre.</p>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_video' chapitre.id %}">Ajouter une nouvelle vidéo</a>

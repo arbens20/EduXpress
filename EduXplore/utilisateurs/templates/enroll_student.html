@@ -1,0 +1,12 @@
+<h2>Enrôler un Étudiant</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="student_id">Étudiant:</label>
+    <select name="student_id">
+        {% for student in students %}
+            <option value="{{ student.id }}">{{ student.user.prenom }} {{ student.user.nom }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Enrôler</button>
+</form>

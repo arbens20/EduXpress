@@ -1,0 +1,10 @@
+<h2>Cours disponibles</h2>
+<ul>
+    {% for course in courses %}
+        <li>
+            <h3>{{ course.title }}</h3>
+            <p>{{ course.description }}</p>
+            <a href="{% url 'enroll_in_course' course.id %}">S'enrôler</a>
+        </li>
+    {% endfor %}
+</ul>

@@ -1,0 +1,10 @@
+<form method="POST">
+    {% csrf_token %}
+    <label for="text">Texte de la question:</label>
+    <input type="text" name="text" id="text" required>
+
+    <label for="points">Nombre de points:</label>
+    <input type="number" name="points" id="points" required>
+    
+    <button type="submit">Ajouter Question</button>
+</form>

@@ -1,0 +1,18 @@
+<h3>Ajouter des réponses pour la question: {{ question.text }}</h3>
+<form method="POST">
+    {% csrf_token %}
+    <label for="text">Réponse:</label>
+    <input type="text" name="text" id="text" required>
+
+    <label for="is_correct">Bonne réponse:</label>
+    <input type="checkbox" name="is_correct" id="is_correct">
+
+    <button type="submit">Ajouter Réponse</button>
+</form>
+
+<p>Liste des réponses actuelles:</p>
+<ul>
+    {% for choice in question.choices.all %}
+        <li>{{ choice.text }} {% if choice.is_correct %}(Correcte){% endif %}</li>
+    {% endfor %}
+</ul>

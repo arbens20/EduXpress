@@ -1,0 +1,12 @@
+<h2>Mes Cours</h2>
+<ul>
+    {% for enrollment in enrollments %}
+        <li>
+            <h3>{{ enrollment.course.title }}</h3>
+            <p>{{ enrollment.course.description }}</p>
+            <a href="{% url 'course_detail' enrollment.course.id %}">Voir les chapitres</a>
+            <a href="{% url 'student_course_detail' enrollment.course.id %}">Voir les chapitres</a>
+
+        </li>
+    {% endfor %}
+</ul>

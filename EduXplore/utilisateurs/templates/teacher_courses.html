@@ -1,0 +1,16 @@
+<h1>Mes Cours</h1>
+
+{% if courses %}
+    <ul>
+        {% for course in courses %}
+            <li>
+                
+                <h2> <a href="{% url 'course_chapters' course.id %}">{{ course.title }}</a></h2>
+                <p>{{ course.description }}</p>
+                <a href="{% url 'course_detail' course.id %}">Voir plus</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Vous n'avez aucun cours pour le moment.</p>
+{% endif %}

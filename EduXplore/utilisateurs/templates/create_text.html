@@ -1,0 +1,11 @@
+<h2>Ajouter un Texte</h2>
+<form method="post">
+    {% csrf_token %}
+    <label for="titre">Titre:</label>
+    <input type="text" name="titre" required>
+
+    <label for="contenu">Texte:</label>
+    <textarea name="contenu" required></textarea>
+
+    <button type="submit">Ajouter</button>
+</form>

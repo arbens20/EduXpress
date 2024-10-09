@@ -1,0 +1,18 @@
+<!-- voir_audios.html -->
+<h1>Audios pour le chapitre: {{ chapitre.nom_chapitre }}</h1>
+
+<ul>
+    {% for audio in audios %}
+        <li>
+            <strong>{{ audio.titre }}</strong><br>
+            <audio controls>
+                <source src="{{ audio.contenu.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </li>
+    {% empty %}
+        <li>Aucun audio trouvé pour ce chapitre.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_audio' chapitre.id %}">Ajouter une nouvelle audio</a>

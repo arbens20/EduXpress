@@ -1,0 +1,22 @@
+{% for message in messages %}
+  <strong>{{ message }}</strong><br>
+{% endfor %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription Etudiant</title>
+</head>
+<body>
+    <h1>Inscription Etudiant</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ user_form.as_p }}  <!-- Affiche les champs du formulaire UserRegistrationForm -->
+        {{ etudiant_form.as_p }}  <!-- Affiche les champs du formulaire EtudiantRegistrationForm -->
+        <button type="submit">S'inscrire</button>
+    </form>
+    <p>Déjà inscrit ? <a href="{% url 'login_view' %}">Connectez-vous ici</a>.</p>
+</body>
+</html>

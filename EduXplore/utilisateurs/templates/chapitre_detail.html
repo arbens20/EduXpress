@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ chapitre.nom_chapitre }}</title>
+</head>
+<body>
+    <h1>{{ chapitre.nom_chapitre }}</h1>
+    <p>{{ chapitre.description }}</p>
+
+    <h2>Vidéos</h2>
+    {% if videos %}
+        <ul>
+            {% for video in videos %}
+                <li>
+                    <h3>{{ video.titre }}</h3>
+                    <video controls>
+                        <source src="{{ video.contenu.url }}" type="video/mp4">
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                    </video>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucune vidéo disponible.</p>
+    {% endif %}
+
+    <br> <br> <br> <br> <br> <br> 
+
+    <h2>Audios</h2>
+    {% if audios %}
+        <ul>
+            {% for audio in audios %}
+                <li>
+                    <h3>{{ audio.titre }}</h3>
+                    <audio controls>
+                        <source src="{{ audio.contenu.url }}" type="audio/mpeg">
+                        Votre navigateur ne supporte pas la lecture d'audios.
+                    </audio>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun audio disponible.</p>
+    {% endif %}
+
+    <br> <br> <br> <br> <br> <br> 
+
+    <h2>Textes</h2>
+    {% if texts %}
+        <ul>
+            {% for text in texts %}
+                <li>
+                    <h3>{{ text.titre }}</h3>
+                    <p>{{ text.contenu }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Aucun texte disponible.</p>
+    {% endif %}
+
+    <a href="{% url 'course_detail' chapitre.cours.id %}">Retour au cours</a>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<!-- voir_textes.html -->
+<h1>Textes pour le chapitre: {{ chapitre.nom_chapitre }}</h1>
+
+<ul>
+    {% for text in texts %}
+        <li>
+            <strong>{{ text.titre }}</strong><br>
+            <p>{{ text.contenu }}</p>
+        </li>
+    {% empty %}
+        <li>Aucun texte trouvé pour ce chapitre.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_text' chapitre.id %}">Ajouter une nouvelle Texte</a>
+
+<br> <br> <br> <br> <br> <br> 

@@ -1,0 +1,34 @@
+{% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            <div>{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+</head>
+<body>
+    <h1>Connexion</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div>
+            <label for="email">E-mail :</label>
+            <input type="email" name="email" required>
+        </div>
+        <div>
+            <label for="password">Mot de passe :</label>
+            <input type="password" name="password" required>
+        </div>
+        <button type="submit">Se connecter</button>
+    </form>
+    
+    <p>Pas encore inscrit ? <a href="{% url 'register_etudiant' %}">Inscrivez-vous ici</a>.</p>
+    <p><a href="{% url 'password_reset' %}">Mot de passe oublié ?</a></p> <!-- Lien vers la réinitialisation du mot de passe -->
+</body>
+</html>
+{% endblock %}

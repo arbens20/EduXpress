@@ -1,0 +1,6 @@
+<h1>{{ course.title }}</h1>
+<p>{{ course.description }}</p>
+<p>Enseignant : {{ course.teacher.user.prenom }} {{ course.teacher.user.nom }}</p>
+ 
+<a href="{% url 'course_chapters' course.id %}">Les chapitres</a>
+
