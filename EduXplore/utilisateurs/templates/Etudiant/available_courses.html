@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours disponibles</title>
+</head>
+<body>
+    <h1>Cours disponibles</h1>
+    <ul>
+        {% for course in available_courses %}
+            <li>
+                {{ course.title }} - {{ course.description }}
+                <a href="{% url 'enroll_in_course' course.id %}">S'inscrire</a>
+            </li>
+        {% empty %}
+            <li>Aucun cours disponible pour le moment.</li>
+        {% endfor %}
+    </ul>
+
+    <button onclick="window.location.href='{% url 'home_etudiant' %}'">
+        Retour au tableau de bord
+    </button>
+</body>
+</html>

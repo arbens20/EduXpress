@@ -34,14 +34,33 @@ def home(request):
     return render(request, 'home.html')
 
 
+# def dashboard_enseignant(request):
+#     user = request.user
+#     if hasattr(user, 'enseignant'):
+#         # C'est un enseignant
+#         context = {'role': 'Enseignant', 'user_info': user.enseignant}
+#     else:
+#         context = {'role': 'Utilisateur inconnu'}
+#     return render(request, 'Enseignant/dashboard_enseignant.html', context)
+
+
 def dashboard_enseignant(request):
     user = request.user
     if hasattr(user, 'enseignant'):
-        # C'est un enseignant
-        context = {'role': 'Enseignant', 'user_info': user.enseignant}
+        # Récupérer les cours et chapitres créés par l'enseignant
+        cours = Course.objects.filter(teacher=user.enseignant)
+        chapitres = Chapitre.objects.filter(cours__teacher=user.enseignant)
+
+        context = {
+            'role': 'Enseignant',
+            'user_info': user.enseignant,
+            'cours': cours,
+            'chapitres': chapitres,
+        }
     else:
         context = {'role': 'Utilisateur inconnu'}
-    return render(request, 'dashboard_enseignant.html', context)
+
+    return render(request, 'Enseignant/dashboard_enseignant.html', context)
 
 
 def register_enseignant(request):
@@ -147,7 +166,7 @@ def register_etudiant(request):
 
 def home_etudiant(request):
     user = request.user
-    if hasattr(user, 'enseignant'):
+    if hasattr(user, 'etudiant'):
         # C'est un enseignant
         context = {'role': 'Etudiant', 'user_info': user.etudiant}
     else:
@@ -160,9 +179,14 @@ def home_etudiant(request):
 
 
 
+
+
+
+
+
+
 # Vue d'activation du compte
-from django.shortcuts import redirect
-from django.http import HttpResponse
+
 
 def activate(request, uidb64, token):
     if request.method != 'GET':
@@ -261,374 +285,373 @@ def index(request):
     return render(request, 'index.html', context)
 
 def logout_view(request):
-    logout(request)  # Déconnecte l'utilisateur
-    return redirect('login_view')  # Redirige vers la page de connexion
+    logout(request) 
+    return redirect('login_view')  
 
 
 
 
 
 
-# Créer un cours
+
+
+# Partie View Concernant les Enseignant##########################################################################################
+
+
+
+
 @login_required
 def create_course(request):
     if request.method == 'POST':
         title = request.POST.get('title')
         description = request.POST.get('description')
-        teacher = Enseignant.objects.get(user=request.user)
+        teacher = request.user.enseignant 
+        
+        Course.objects.create(title=title, description=description, teacher=teacher)
+        return redirect('course_list')  
+    
+    return render(request, 'Enseignant/create_course.html')
 
-        course = Course.objects.create(title=title, description=description, teacher=teacher)
-        return redirect('teacher_courses')  # redirection vers la liste des cours après la création
-
-    return render(request, 'create_course.html')
-
-
-# Créer un enrôlement
 @login_required
-def enroll_student(request, course_id):
-    if request.method == 'POST':
-        student_id = request.POST.get('student_id')
-        student = get_object_or_404(Etudiant, id=student_id)
-        course = get_object_or_404(Course, id=course_id)
+def course_list(request):
+    courses = Course.objects.filter(teacher=request.user.enseignant)
+    return render(request, 'Enseignant/course_list.html', {'courses': courses})
 
-        Enrollment.objects.create(student=student, course=course)
-        return redirect('course_detail', course_id=course.id)
-
-    students = Etudiant.objects.all()  # liste d'étudiants pour enrôler
-    return render(request, 'enroll_student.html', {'students': students})
-
-
-# Créer un chapitre
 @login_required
 def create_chapitre(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
     if request.method == 'POST':
         nom_chapitre = request.POST.get('nom_chapitre')
         description = request.POST.get('description')
-        course = get_object_or_404(Course, id=course_id)
-        chapitre = Chapitre.objects.create(cours=course, nom_chapitre=nom_chapitre, description=description)
-        return redirect('course_detail', course_id=course.id)
+        
+        Chapitre.objects.create(cours=course, nom_chapitre=nom_chapitre, description=description)
+        return redirect('chapter_list', course_id=course.id)  # Rediriger vers la liste des chapitres
+    
+    return render(request, 'Enseignant/create_chapitre.html', {'course': course})
 
-    return render(request, 'create_chapitre.html')
-
-
-# Créer une vidéo avec gestion de la taille
-
+@login_required
+def chapter_list(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    chapitres = Chapitre.objects.filter(cours=course)
+    return render(request, 'Enseignant/chapter_list.html', {'chapitres': chapitres, 'course': course})
 
 @login_required
 def create_video(request, chapitre_id):
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
     if request.method == 'POST':
         titre = request.POST.get('titre')
         contenu = request.FILES.get('contenu')
-        chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-
-        # Vérification de la taille du fichier (par exemple, 50 MB maximum)
-        max_file_size = 50 * 1024 * 1024  # 50 MB
-        if contenu.size > max_file_size:
-            return HttpResponse('La taille de la vidéo dépasse la limite autorisée de 50 MB.')
-
+        
         Video.objects.create(chapitre=chapitre, titre=titre, contenu=contenu)
+        return redirect('chapter_list', course_id=chapitre.cours.id)
+    
+    return render(request, 'Enseignant/create_video.html', {'chapitre': chapitre})
 
-        # Rediriger vers la page des chapitres du cours en utilisant course_id
-        return redirect('chapitre_detail', course_id=chapitre.cours.id)
-
-    return render(request, 'create_video.html')
-
-
-
-@login_required
-def chapitre_videos(request, chapitre_id):
-    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-    videos = Video.objects.filter(chapitre=chapitre)
-
-    return render(request, 'chapitre_videos.html', {'chapitre': chapitre, 'videos': videos})
-
-
-
-# Créer un audio
 @login_required
 def create_audio(request, chapitre_id):
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
     if request.method == 'POST':
         titre = request.POST.get('titre')
         contenu = request.FILES.get('contenu')
-        chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-
+        
         Audio.objects.create(chapitre=chapitre, titre=titre, contenu=contenu)
-        return redirect('chapitre_detail', chapitre_id=chapitre.id)
+        return redirect('chapter_list', course_id=chapitre.cours.id)
+    
+    return render(request, 'Enseignant/create_audio.html', {'chapitre': chapitre})
 
-    return render(request, 'create_audio.html')
-
-
-# Créer un texte
 @login_required
-def create_text(request, chapitre_id):
+def create_texte(request, chapitre_id):
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
     if request.method == 'POST':
         titre = request.POST.get('titre')
         contenu = request.POST.get('contenu')
-        chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-
-        Texte.objects.create(chapitre=chapitre, titre=titre, contenu=contenu)
-        return redirect('chapitre_detail', chapitre_id=chapitre.id)
-
-    return render(request, 'create_text.html')
-
-
-
-
-# Vue pour afficher les cours de l'enseignant connecté
-@login_required
-def teacher_courses(request):
-    # Vérifiez que l'utilisateur est un enseignant et est connecté
-    if request.user.is_authenticated :
-        # Trouver l'enseignant lié à cet utilisateur
-        try:
-            enseignant = Enseignant.objects.get(user=request.user)
-        except Enseignant.DoesNotExist:
-            enseignant = None
         
-        # Filtrer les cours associés à cet enseignant
-        if enseignant:
-            courses = Course.objects.filter(teacher=enseignant)
-        else:
-            courses = []
-    else:
-        # Si l'utilisateur n'est pas un enseignant ou n'est pas connecté
-        courses = []
-
-    # Renvoyer les cours filtrés à un template
-    return render(request, 'teacher_courses.html', {'courses': courses})
-
-
-
-
-def course_detail(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    return render(request, 'course_detail.html', {'course': course})
-
-
-
-def course_chapters(request, course_id):
-    course = get_object_or_404(Course, id=course_id)
-    chapitres = Chapitre.objects.filter(cours=course)
+        Texte.objects.create(chapitre=chapitre, titre=titre, contenu=contenu)
+        return redirect('chapter_list', course_id=chapitre.cours.id)
     
-    return render(request, 'course_chapters.html', {'course': course, 'chapitres': chapitres})
+    return render(request, 'Enseignant/create_texte.html', {'chapitre': chapitre})
+
+@login_required
+def create_quiz(request, chapitre_id):
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        quiz = Quiz.objects.create(chapitre=chapitre, title=title, teacher=request.user.enseignant)
+        return redirect('create_question', quiz_id=quiz.id)
+    
+    return render(request, 'Enseignant/create_quiz.html', {'chapitre': chapitre})
+
+@login_required
+def create_question(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        points = request.POST.get('points')
+        question = Question.objects.create(quiz=quiz, text=text, points=points)
+        
+        # Ajouter les choix
+        for i in range(int(request.POST.get('num_choices', 0))):
+            choice_text = request.POST.get(f'choice_text_{i}')
+            is_correct = request.POST.get(f'is_correct_{i}') == 'on'
+            Choice.objects.create(question=question, text=choice_text, is_correct=is_correct)
+        
+        return redirect('chapter_list', course_id=quiz.chapitre.cours.id)
+    
+    return render(request, 'Enseignant/create_question.html', {'quiz': quiz})
+
+@login_required
+def quiz_list(request):
+    quizzes = Quiz.objects.filter(teacher=request.user.enseignant)
+    return render(request, 'Enseignant/quiz_list.html', {'quizzes': quizzes})
 
 
 
 @login_required
 def chapitre_detail(request, chapitre_id):
     chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-    videos = chapitre.video_set.all()  
-    audios = chapitre.audio_set.all()  
-    texts = chapitre.texte_set.all()  
+    videos = Video.objects.filter(chapitre=chapitre)
+    audios = Audio.objects.filter(chapitre=chapitre)
+    textes = Texte.objects.filter(chapitre=chapitre)
+    quizzes = Quiz.objects.filter(chapitre=chapitre)
 
     context = {
         'chapitre': chapitre,
         'videos': videos,
         'audios': audios,
-        'texts': texts,
+        'textes': textes,
+        'quizzes': quizzes,
     }
     
-    return render(request, 'chapitre_detail.html', context)
+    return render(request, 'Enseignant/chapitre_detail.html', context)
 
 
 
-
-# recuperer audio d'un chapitre
-
-@login_required
-def chapitre_audios(request, chapitre_id):
-    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-    audios = chapitre.audio_set.all()  # Récupère tous les audios liés au chapitre
-
-    context = {
-        'chapitre': chapitre,
-        'audios': audios,
-    }
-    
-    return render(request, 'chapitre_audios.html', context)
-
-
-
-# recuperer texte d'un chapitre
-@login_required
-def chapitre_textes(request, chapitre_id):
-    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-    texts = chapitre.texte_set.all()  # 
-
-    context = {
-        'chapitre': chapitre,
-        'texts': texts,
-    }
-    
-    return render(request, 'chapitre_textes.html', context)
-
-
-
-
-
-############################################################################################################
-@login_required
-def create_quiz(request, chapitre_id):
-    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
-    if request.method == 'POST':
-        title = request.POST.get('title')
-        if title:
-            quiz = Quiz.objects.create(title=title, chapitre=chapitre, teacher=request.user.enseignant)
-            return redirect('add_question', quiz_id=quiz.id)
-    return render(request, 'create_quiz.html', {'chapitre': chapitre})
-
-
-
-
-# Ajouter question Quiz Prof
-
-@login_required
-def add_question(request, quiz_id):
+def quiz_detail(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    if request.method == 'POST':
-        question_text = request.POST.get('text')
-        points = request.POST.get('points')
-        if question_text and points:
-            question = Question.objects.create(text=question_text, points=points, quiz=quiz)
-            return redirect('add_choices', question_id=question.id)
-    return render(request, 'add_question.html', {'quiz': quiz})
+    questions = quiz.questions.all()
+
+    context = {
+        'quiz': quiz,
+        'questions': questions,
+    }
+    return render(request, 'Enseignant/quiz_detail.html', context)
 
 
 
 
 
-# ajouter reponse quiz prof
+def chapitre_detail_global(request, chapitre_id):
+    chapitre = get_object_or_404(Chapitre, id=chapitre_id)
+    videos = chapitre.video_set.order_by('date_added')  
+    audios = chapitre.audio_set.order_by('date_added')
+    textes = chapitre.texte_set.order_by('date_added')
 
-@login_required
-def add_choices(request, question_id):
-    question = get_object_or_404(Question, id=question_id)
-    if request.method == 'POST':
-        choice_text = request.POST.get('text')
-        is_correct = request.POST.get('is_correct') == 'on'
-        if choice_text:
-            Choice.objects.create(text=choice_text, is_correct=is_correct, question=question)
-        return redirect('add_choices', question_id=question.id)  # Reviens sur la même page pour ajouter d'autres réponses
-    return render(request, 'add_choices.html', {'question': question})
-
-
-
-
-
-# voir les cours disponible non enregistrer
-@login_required
-def available_courses(request):
-    student = Etudiant.objects.get(user=request.user)
-    enrolled_courses = Enrollment.objects.filter(student=student).values_list('course', flat=True)
-    courses = Course.objects.exclude(id__in=enrolled_courses)
-    
-    return render(request, 'available_courses.html', {'courses': courses})
+    context = {
+        'chapitre': chapitre,
+        'videos': videos,
+        'audios': audios,
+        'textes': textes,
+    }
+    return render(request, 'Enseignant/chapitre_detail_global.html', context)
 
 
 
 
-# lec cours ou l'etudiant est inscrit
-def available_courses_for_student(request):
-    etudiant = get_object_or_404(Etudiant, user=request.user)
-    
-    # Filtrer les cours auxquels l'étudiant n'est pas encore inscrit
-    available_courses = Course.objects.exclude(students=etudiant)
-    
-    return render(request, 'available_courses.html', {'courses': available_courses})
+
+
+
+# Fin Partie View Concernant les Enseignant##########################################################################################
+
+
+
+
+
+
+
+
+
+# Debut Partie View Concernant les Enseignant##########################################################################################
 
 
 
 
 # @login_required
-# def enroll_in_course(request, course_id):
-#     student = Etudiant.objects.get(user=request.user)
-#     course = get_object_or_404(Course, id=course_id)
+# def available_courses_student(request):
+#     """Afficher les cours disponibles pour l'étudiant."""
+#     user = request.user
+#     if hasattr(user, 'etudiant'):
+#         courses = Course.objects.all()  # Tous les cours disponibles
+#         return render(request, 'Etudiant/available_courses.html', {'courses': courses})
+#     return redirect('login')
+
+
+@login_required
+def available_courses(request):
+    etudiant = request.user.etudiant
+
+    # Cours auxquels l'étudiant n'est pas encore inscrit
+    available_courses = Course.objects.exclude(students=etudiant)
+
+    return render(request, 'Etudiant/available_courses.html', {
+        'available_courses': available_courses,
+    })
+
     
-#     # Vérifie si l'étudiant est déjà enrôlé
-#     if not Enrollment.objects.filter(student=student, course=course).exists():
-#         Enrollment.objects.create(student=student, course=course)
-    
-#     return redirect('my_courses')  # Rediriger vers une vue où l'étudiant voit ses cours
+@login_required   
+def enrolled_courses(request):
+    etudiant = request.user.etudiant
+
+    # Cours auxquels l'étudiant est dja inscrit
+    enrolled_courses = Course.objects.filter(students=etudiant)
+
+    return render(request, 'Etudiant/enrolled_courses.html', {
+        'enrolled_courses': enrolled_courses,
+    })
 
 def enroll_in_course(request, course_id):
-    etudiant = get_object_or_404(Etudiant, user=request.user)
+    etudiant = request.user.etudiant
     course = get_object_or_404(Course, id=course_id)
     
-    # Ajouter l'étudiant au cours s'il n'est pas déjà inscrit
+    # Ajouter l'étudiant au cours sil pa inscrit
     if etudiant not in course.students.all():
-        Enrollment.objects.create(student=etudiant, course=course)
-    
-    return redirect('student_course_chapters', course_id=course.id)
+        course.students.add(etudiant)
 
-
-
-# Afficher les cours enrolle
-
-@login_required
-def my_courses(request):
-    student = Etudiant.objects.get(user=request.user)
-    enrollments = Enrollment.objects.filter(student=student)
-    
-    return render(request, 'my_courses.html', {'enrollments': enrollments})
+    return redirect('enrolled_courses')
 
 
 
 
 @login_required
-def course_detail2(request, course_id):
+def enroll_in_course_student(request, course_id):
+    """Inscrire un étudiant dans un cours."""
+    user = request.user
+    student = user.etudiant
     course = get_object_or_404(Course, id=course_id)
-    chapters = course.chapitre_set.all()  # Assumant que tu as un modèle "Chapitre" lié à "Course"
-    
-    return render(request, 'course_chapters_student.html', {'course': course, 'chapters': chapters})
 
+    # Créer une inscription
+    Enrollment.objects.get_or_create(student=student, course=course)
+    return redirect('student_courses')
 
+@login_required
+def student_courses_student(request):
+    """Afficher les cours auxquels l'étudiant est inscrit."""
+    user = request.user
+    if hasattr(user, 'etudiant'):
+        courses = Enrollment.objects.filter(student=user.etudiant)
+        return render(request, 'Etudiant/student_courses.html', {'courses': courses})
+    return redirect('login')
 
+@login_required
 def course_chapters_student(request, course_id):
+    """Afficher les chapitres d'un cours spécifique."""
+    user = request.user
     course = get_object_or_404(Course, id=course_id)
-    chapitres = Chapitre.objects.filter(cours=course)
+
+    if hasattr(user, 'etudiant'):
+        chapters = Chapitre.objects.filter(cours=course)
+        return render(request, 'Etudiant/course_chapters.html', {'chapters': chapters, 'course': course})
+    return redirect('login')
+
+@login_required
+def chapter_details_student(request, chapter_id):
+    """Afficher les vidéos et textes d'un chapitre."""
+    user = request.user
+    chapter = get_object_or_404(Chapitre, id=chapter_id)
+    videos = Video.objects.filter(chapitre=chapter)
+    texts = Texte.objects.filter(chapitre=chapter)
+
+    if hasattr(user, 'etudiant'):
+        return render(request, 'Etudiant/chapter_details.html', {'chapter': chapter, 'videos': videos, 'texts': texts})
+    return redirect('login')
+
+@login_required
+def quiz_detail_student(request, quiz_id):
+    """Afficher les détails d'un quiz et permettre à l'étudiant de le passer."""
+    user = request.user
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+    questions = quiz.questions.all()
+
+    if request.method == 'POST':
+        # Logique pour évaluer le quiz
+       
+        pass
+
+    return render(request, 'Etudiant/quiz_detail.html', {'quiz': quiz, 'questions': questions})
+
+
+
+# Fin Partie View Concernant les Etudiants##########################################################################################
+
+
+
+
+
+# Fin Partie View Concernant les Tuteurs##########################################################################################
+
+
+@login_required
+def dashboard_tuteur(request):
+    tuteur = get_object_or_404(Tuteur, user=request.user)
+    etudiants = Etudiant.objects.filter(enrolled_by_tuteur=tuteur)
     
-    return render(request, 'course_chapters_student.html', {'course': course, 'chapitres': chapitres})
+    context = {
+        'tuteur': tuteur,
+        'etudiants': etudiants,
+    }
+    return render(request, 'dashboard_tuteur.html', context)
 
 
 
-# Afficher chapitre cours
 
-def student_course_chapters(request, course_id):
-    # Récupérer l'étudiant connecté
-    etudiant = get_object_or_404(Etudiant, user=request.user)
+
+
+
+
+
+
+
+@login_required
+def tuteur_available_courses(request, etudiant_id):
+    tuteur = request.user.tuteur
+    etudiant = get_object_or_404(Etudiant, id=etudiant_id)
     
+    # Obtenir la liste des cours auxquels l'étudiant n'est pas encore inscrit
+    available_courses = Course.objects.exclude(students=etudiant)
+    
+    context = {
+        'etudiant': etudiant,
+        'available_courses': available_courses,
+    }
+    return render(request, 'Tuteur/available_courses.html', context)
+
+
+@login_required
+def tuteur_enroll_in_course(request, etudiant_id, course_id):
+    tuteur = request.user.tuteur
+    etudiant = get_object_or_404(Etudiant, id=etudiant_id)
     course = get_object_or_404(Course, id=course_id)
     
+    # Inscrire l'étudiant au cours si ce n'est pas déjà fait
     if etudiant not in course.students.all():
-        return redirect('available_courses_for_student')  
+        course.students.add(etudiant)
+    
+    return redirect('tuteur_enrolled_courses', etudiant_id=etudiant.id)
 
-    chapters = course.chapitre_set.all()  
+
+
+@login_required
+def tuteur_enrolled_courses(request, etudiant_id):
+    etudiant = get_object_or_404(Etudiant, id=etudiant_id)
+    enrolled_courses = etudiant.course_set.all()  # Obtenir les cours auxquels l'étudiant est inscrit
     
     context = {
-        'course': course,
-        'chapters': chapters
+        'etudiant': etudiant,
+        'enrolled_courses': enrolled_courses,
     }
-    return render(request, 'course_chapters_student.html', context)
+    return render(request, 'Tuteur/enrolled_courses.html', context)
 
 
 
-# details cours etudiant
 
 
-def student_course_detail(request, course_id):
-    # Récupérer l'étudiant connecté
-    etudiant = get_object_or_404(Etudiant, user=request.user)
-    
-    # Vérifier que l'étudiant est bien inscrit dans le cours
-    enrollment = get_object_or_404(Enrollment, course_id=course_id, student=etudiant)
-    
-    # Récupérer le cours et ses chapitres
-    course = enrollment.course
-    chapters = course.chapitre_set.all()
-    
-    context = {
-        'course': course,
-        'chapters': chapters,
-    }
-    return render(request, 'student_course_detail.html', context)
-
-
+# Fin Partie View Concernant les Tuteurs##########################################################################################

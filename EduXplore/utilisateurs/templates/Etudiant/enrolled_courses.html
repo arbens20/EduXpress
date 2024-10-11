@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cours inscrits</title>
+</head>
+<body>
+    <h1>Cours auxquels vous êtes inscrit</h1>
+    <ul>
+        {% for course in enrolled_courses %}
+            <li>{{ course.title }} - {{ course.description }}</li>
+        {% empty %}
+            <li>Vous n'êtes inscrit à aucun cours pour le moment.</li>
+        {% endfor %}
+    </ul>
+
+    <button onclick="window.location.href='{% url 'home_etudiant' %}'">
+        Retour au tableau de bord
+    </button>
+</body>
+</html>

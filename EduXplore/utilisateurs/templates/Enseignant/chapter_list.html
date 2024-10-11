@@ -1,0 +1,13 @@
+<h1>Liste des Chapitres pour {{ course.title }}</h1>
+<ul>
+    {% for chapitre in chapitres %}
+        <li>
+            <a href="{% url 'chapitre_detail' chapitre.id %}">{{ chapitre.nom_chapitre }}</a> - {{ chapitre.description }}
+            <a href="{% url 'create_video' chapitre.id %}">Ajouter Vidéo</a>
+            <a href="{% url 'create_audio' chapitre.id %}">Ajouter Audio</a>
+            <a href="{% url 'create_texte' chapitre.id %}">Ajouter Texte</a>
+            <a href="{% url 'create_quiz' chapitre.id %}">Créer Quiz</a>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_chapitre' course.id %}">Créer un nouveau chapitre</a>

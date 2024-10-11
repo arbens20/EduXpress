@@ -1,0 +1,87 @@
+<h1>Détails du Chapitre : {{ chapitre.nom_chapitre }}</h1>
+<p>{{ chapitre.description }}</p>
+
+<h2>Vidéos</h2>
+<div class="media-container">
+    {% for video in videos %}
+        <div class="media-box">
+            <strong>{{ video.titre }}</strong>
+            <video width="300" height="300" controls>
+                <source src="{{ video.contenu.url }}" type="video/mp4"> <!-- Changez le type si nécessaire -->
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+        </div>
+    {% empty %}
+        <p>Aucune vidéo disponible pour ce chapitre.</p>
+    {% endfor %}
+</div>
+
+<h2>Audios</h2>
+<div class="media-container">
+    {% for audio in audios %}
+        <div class="media-box">
+            <strong>{{ audio.titre }}</strong>
+            <audio controls>
+                <source src="{{ audio.contenu.url }}" type="audio/mpeg"> <!-- Changez le type si nécessaire -->
+                Votre navigateur ne supporte pas la lecture d'audios.
+            </audio>
+        </div>
+    {% empty %}
+        <p>Aucun audio disponible pour ce chapitre.</p>
+    {% endfor %}
+</div>
+
+
+<h2>Textes</h2>
+<ul>
+    {% for texte in textes %}
+        <li>
+            <strong>{{ texte.titre }}</strong>
+            <p>{{ texte.contenu }}</p>
+        </li>
+    {% empty %}
+        <li>Aucun texte disponible.</li>
+    {% endfor %}
+</ul>
+
+<h2>Quizzes</h2>
+<ul>
+    {% for quiz in quizzes %}
+        <li>
+            <strong>{{ quiz.title }}</strong> - Créé par {{ quiz.teacher.user.prenom }} {{ quiz.teacher.user.nom }}
+            <a href="{% url 'quiz_detail' quiz.id %}">Voir le quiz</a> <!-- Remplacez 'quiz_detail' par le nom de votre vue de détail de quiz -->
+        </li>
+    {% empty %}
+        <li>Aucun quiz disponible.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'create_video' chapitre.id %}">Ajouter une Vidéo</a> <br>
+<a href="{% url 'create_audio' chapitre.id %}">Ajouter un Audio</a> <br>
+<a href="{% url 'create_texte' chapitre.id %}">Ajouter un Texte</a> <br>
+<a href="{% url 'create_quiz' chapitre.id %}">Créer un Quiz</a> <br>
+<a href="{% url 'chapter_list' chapitre.cours.id %}">Retourner à la liste des chapitres</a>
+
+<style>
+    .media-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* Espace entre les boîtes */
+    }
+
+    .media-box {
+        width: 300px;
+        height: 300px;
+        border: 1px solid #ccc; /* Bordure autour des boîtes */
+        border-radius: 8px; /* Coins arrondis */
+        padding: 10px;
+        box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2); /* Ombre pour un effet de profondeur */
+        text-align: center; /* Centre le texte */
+        overflow: hidden; /* Évite le débordement */
+    }
+
+    video, audio {
+        max-width: 100%; /* Assure que le média ne dépasse pas la boîte */
+        max-height: 100%; /* Assure que le média ne dépasse pas la boîte */
+    }
+</style>

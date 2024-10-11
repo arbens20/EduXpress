@@ -3,14 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tableau de bord étudiant</title>
 </head>
 <body>
-    <h1>Welcome To your Dashboard, {{ user.prenom }} {{ user.nom }}!!!</h1>
-    <p>Rôle : {{ user.get_role_display }}</p>  <!-- Affiche le rôle de l'utilisateur -->
-    {% comment %} <h2>Course <a href="{% url 'available_courses' %}">+</a></h2> {% endcomment %}
-    <h2>Course <a href="{% url 'available_courses_for_student' %}">+</a></h2>
-    <h2>Mes Cours <a href="{% url 'my_courses' %}">+</a></h2>
+    <h1>Bienvenue sur votre Tableau de Bord, {{ user.prenom }} {{ user.nom }} !</h1>
+
+    <p>Rôle : {{ user.get_role_display }}</p>
+
+    <div>
+        <!-- Bouton pour afficher la liste des cours disponibles -->
+        <h2>Accès rapide :</h2>
+        <button onclick="window.location.href='{% url 'available_courses' %}'">
+            Voir les cours disponibles
+        </button>
+        <button onclick="window.location.href='{% url 'enrolled_courses' %}'">
+            Voir les cours inscrits
+        </button>
+    </div>
 
     <p><a href="{% url 'logout_view' %}">Se déconnecter</a></p>  <!-- Lien pour se déconnecter -->
 </body>

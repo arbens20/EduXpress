@@ -1,0 +1,6 @@
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="titre" placeholder="Titre du texte" required>
+    <textarea name="contenu" placeholder="Contenu du texte" required></textarea>
+    <button type="submit">Ajouter Texte</button>
+</form>

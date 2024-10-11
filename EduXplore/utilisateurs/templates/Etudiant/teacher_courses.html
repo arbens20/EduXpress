@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes Cours</title>
+</head>
+<body>
+    <h1>Mes Cours</h1>
+    <ul>
+        {% for enrollment in courses %}
+            <li>
+                <strong>{{ enrollment.course.title }}</strong>: {{ enrollment.course.description }}
+                <a href="{% url 'course_chapters_student' enrollment.course.id %}">Voir les chapitres</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'available_courses_student' %}">Voir les cours disponibles</a>
+</body>
+</html>

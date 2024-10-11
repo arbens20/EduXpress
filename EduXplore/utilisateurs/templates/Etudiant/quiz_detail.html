@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: {{ quiz.title }}</title>
+</head>
+<body>
+    <h1>Quiz: {{ quiz.title }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <ul>
+            {% for question in questions %}
+                <li>
+                    <strong>{{ question.text }}</strong>
+                    <ul>
+                        {% for choice in question.choices.all %}
+                            <li>
+                                <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}">
+                                {{ choice.text }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+        <button type="submit">Soumettre</button>
+    </form>
+    <a href="{% url 'course_chapters_student' quiz.chapitre.id %}">Retour aux chapitres</a>
+</body>
+</html>

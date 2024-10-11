@@ -1,0 +1,12 @@
+<h1>Cours disponibles pour {{ etudiant.user.prenom }} {{ etudiant.user.nom }}</h1>
+<ul>
+    {% for course in available_courses %}
+        <li>
+            {{ course.title }} - {{ course.description }}
+            <a href="{% url 'tuteur_enroll_in_course' etudiant.id course.id %}">Inscrire</a>
+        </li>
+    {% empty %}
+        <li>Aucun cours disponible pour cet étudiant.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'tuteur_enrolled_courses' etudiant.id %}">Voir les cours inscrits</a>

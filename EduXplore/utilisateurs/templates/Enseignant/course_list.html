@@ -1,0 +1,10 @@
+<h1>Liste des Cours</h1>
+<ul>
+    {% for course in courses %}
+        <li>
+            {{ course.title }} - {{ course.description }}
+            <a href="{% url 'chapter_list' course.id %}">Voir Chapitres</a>
+        </li>
+    {% endfor %}
+</ul>
+<a href="{% url 'create_course' %}">Créer un nouveau cours</a>

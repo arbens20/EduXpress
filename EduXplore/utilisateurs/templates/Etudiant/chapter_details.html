@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Chapitre: {{ chapter.nom_chapitre }}</title>
+</head>
+<body>
+    <h1>Détails du Chapitre: {{ chapter.nom_chapitre }}</h1>
+    <h2>Vidéos</h2>
+    <ul>
+        {% for video in videos %}
+            <li>
+                <strong>{{ video.titre }}</strong>
+                <video width="300" controls>
+                    <source src="{{ video.contenu.url }}" type="video/mp4">
+                    Votre navigateur ne prend pas en charge la vidéo.
+                </video>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h2>Textes</h2>
+    <ul>
+        {% for text in texts %}
+            <li>
+                <strong>{{ text.titre }}</strong>
+                <p>{{ text.contenu }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'course_chapters_student' chapter.cours.id %}">Retour aux chapitres</a>
+</body>
+</html>

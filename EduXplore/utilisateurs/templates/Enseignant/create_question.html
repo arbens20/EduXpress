@@ -1,0 +1,47 @@
+<form method="POST">
+    {% csrf_token %}
+    <h2>Créer une question pour {{ quiz.title }}</h2>
+    <input type="text" name="text" placeholder="Texte de la question" required>
+    <input type="number" name="points" placeholder="Points" required>
+    
+    <h3>Choix de réponses</h3>
+    <div id="choices">
+        <div class="choice">
+            <input type="text" name="choice_text_0" placeholder="Choix 1" required>
+            <label>
+                <input type="checkbox" name="is_correct_0"> Correct
+            </label>
+        </div>
+        <div class="choice">
+            <input type="text" name="choice_text_1" placeholder="Choix 2" required>
+            <label>
+                <input type="checkbox" name="is_correct_1"> Correct
+            </label>
+        </div>
+    </div>
+    
+    <button type="button" onclick="addChoice()">Ajouter un choix</button>
+    <input type="hidden" name="num_choices" id="num_choices" value="2">
+    
+    <button type="submit">Créer la question</button>
+</form>
+
+<script>
+    function addChoice() {
+        const choicesDiv = document.getElementById('choices');
+        const numChoices = document.getElementById('num_choices');
+        const choiceCount = parseInt(numChoices.value);
+        
+        const newChoiceDiv = document.createElement('div');
+        newChoiceDiv.classList.add('choice');
+        newChoiceDiv.innerHTML = `
+            <input type="text" name="choice_text_${choiceCount}" placeholder="Choix ${choiceCount + 1}" required>
+            <label>
+                <input type="checkbox" name="is_correct_${choiceCount}"> Correct
+            </label>
+        `;
+        
+        choicesDiv.appendChild(newChoiceDiv);
+        numChoices.value = choiceCount + 1;  // Increment le nombre de choix
+    }
+</script>

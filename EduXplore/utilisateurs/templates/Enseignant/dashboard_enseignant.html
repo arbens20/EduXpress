@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard {{ user_info.user.prenom }}  </title>
+</head>
+<body>
+
+
+
+<h1>Bienvenue sur le Tableau de Bord - {{ role }}</h1>
+
+<p>Nom : {{ user_info.user.prenom }} {{ user_info.user.nom }}</p>
+
+<p><a href="{% url 'logout_view' %}">Se déconnecter</a></p>  <!-- Lien pour se déconnecter -->
+
+
+<!-- Boutons pour les différentes actions -->
+<div class="button-container">
+    <a href="{% url 'create_course' %}" class="button">Créer un Cours</a>
+    <a href="{% url 'course_list' %}" class="button">Liste des Cours</a>
+</div>
+
+<h2>Mes Différents Chapitres</h2>
+<ul>
+    {% for chapitre in chapitres %}
+        <li>{{ chapitre.nom_chapitre }} ({{ chapitre.cours.title }})
+            <a href="{% url 'chapitre_detail' chapitre.id %}">Voir Détails</a>
+        </li>
+    {% empty %}
+        <li>Vous n'avez pas encore créé de chapitres.</li>
+    {% endfor %}
+</ul>
+
+<h2>Liste des Chapitres par Cours</h2>
+<ul>
+    {% for cours in cours %}
+        <li><strong>{{ cours.title }}</strong>
+            <ul>
+                {% for chapitre in cours.chapitre_set.all %}
+                    <li>
+                        {{ chapitre.nom_chapitre }}
+                        <a href="{% url 'chapitre_detail_global' chapitre.id %}">Voir Contenu</a>
+                    </li>
+                {% empty %}
+                    <li>Pas de chapitres dans ce cours.</li>
+                {% endfor %}
+            </ul>
+        </li>
+    {% empty %}
+        <li>Vous n'avez pas encore créé de cours.</li>
+    {% endfor %}
+</ul>
+
+<style>
+    .button-container {
+        margin-bottom: 20px;
+    }
+    .button {
+        display: inline-block;
+        padding: 10px 20px;
+        margin-right: 10px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .button:hover {
+        background-color: #0056b3;
+    }
+</style>

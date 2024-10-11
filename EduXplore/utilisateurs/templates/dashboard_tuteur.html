@@ -1,0 +1,18 @@
+<h1>Dashboard Tuteur</h1>
+
+<h2>Étudiants gérés par {{ tuteur.user.prenom }} {{ tuteur.user.nom }}</h2>
+
+{% for etudiant in etudiants %}
+    <div>
+        <h3>{{ etudiant.user.prenom }} {{ etudiant.user.nom }}</h3>
+        <a href="{% url 'tuteur_available_courses' etudiant.id %}">
+            <button>Voir les cours disponibles</button>
+        </a>
+        <a href="{% url 'tuteur_enrolled_courses' etudiant.id %}">
+            <button>Voir les cours inscrits</button>
+        </a>
+    </div>
+    <hr>
+{% empty %}
+    <p>Vous n'avez pas encore d'étudiants sous votre supervision.</p>
+{% endfor %}

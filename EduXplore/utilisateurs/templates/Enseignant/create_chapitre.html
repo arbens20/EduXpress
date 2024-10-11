@@ -1,0 +1,6 @@
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="nom_chapitre" placeholder="Nom du chapitre" required>
+    <textarea name="description" placeholder="Description du chapitre" required></textarea>
+    <button type="submit">Créer le chapitre</button>
+</form>

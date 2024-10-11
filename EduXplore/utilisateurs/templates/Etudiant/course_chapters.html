@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapitres de {{ course.title }}</title>
+</head>
+<body>
+    <h1>Chapitres de {{ course.title }}</h1>
+    <ul>
+        {% for chapter in chapters %}
+            <li>
+                <strong>{{ chapter.nom_chapitre }}</strong>: {{ chapter.description }}
+                <a href="{% url 'chapter_details_student' chapter.id %}">Voir les détails</a>
+            </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'student_courses_student' %}">Retour à mes cours</a>
+</body>
+</html>

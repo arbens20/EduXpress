@@ -20,42 +20,86 @@ urlpatterns = [
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'), name='password_reset_complete'),
     
 
-    path('course/create/', utilisateurs_views.create_course, name='create_course'),
-    path('course/<int:course_id>/enroll/', utilisateurs_views.enroll_student, name='enroll_student'),
-    path('course/<int:course_id>/chapitre/create/', utilisateurs_views.create_chapitre, name='create_chapitre'),
-    path('chapitre/<int:chapitre_id>/video/create/', utilisateurs_views.create_video, name='create_video'),
-    path('chapitre/<int:chapitre_id>/audio/create/', utilisateurs_views.create_audio, name='create_audio'),
-    path('chapitre/<int:chapitre_id>/text/create/', utilisateurs_views.create_text, name='create_text'),
-    path('teacher/courses/', utilisateurs_views.teacher_courses, name='teacher_courses'),
-    path('course/<int:course_id>/', utilisateurs_views.course_detail, name='course_detail'),
-    # path('course/<int:course_id>/', utilisateurs_views.course_chapters, name='course_chapters'),
-    path('course/<int:course_id>/chapters/', utilisateurs_views.course_chapters, name='course_chapters'),
-    path('chapitre/<int:chapitre_id>/videos/', utilisateurs_views.chapitre_videos, name='chapitre_videos'),
-    path('chapitre/<int:chapitre_id>/video/add/', utilisateurs_views.create_video, name='create_video'),
-    path('chapitre/<int:chapitre_id>/audio/add/', utilisateurs_views.create_audio, name='create_audio'),
-    path('chapitre/<int:chapitre_id>/text/add/', utilisateurs_views.create_text, name='create_text'),
-    path('chapitre/<int:chapitre_id>/', utilisateurs_views.chapitre_detail, name='chapitre_detail'),
-    path('chapitre/<int:chapitre_id>/audios/', utilisateurs_views.chapitre_audios, name='chapitre_audios'),
-    path('chapitre/<int:chapitre_id>/textes/', utilisateurs_views.chapitre_textes, name='chapitre_textes'),
-    
-    
-    
-    path('chapitre/<int:chapitre_id>/quiz/create/', utilisateurs_views.create_quiz, name='create_quiz'),
-    path('quiz/<int:quiz_id>/questions/add/', utilisateurs_views.add_question, name='add_question'),
-    path('questions/<int:question_id>/choices/add/', utilisateurs_views.add_choices, name='add_choices'),
-    
-    
-    path('courses/', utilisateurs_views.available_courses, name='available_courses'),
-    path('courses/enroll/<int:course_id>/', utilisateurs_views.enroll_in_course, name='enroll_in_course'),
-    path('my_courses/', utilisateurs_views.my_courses, name='my_courses'),
-    path('courses/<int:course_id>/', utilisateurs_views.course_detail2, name='course_detail'),
-    path('etudiant/course/<int:course_id>/detail/', utilisateurs_views.student_course_detail, name='student_course_detail'),
-   
 
-    path('course/<int:course_id>/chapters/', utilisateurs_views.course_chapters_student, name='course_chapters_student'),
+
     
-    path('etudiant/courses/', utilisateurs_views.available_courses_for_student, name='available_courses_for_student'),
-    path('etudiant/course/<int:course_id>/chapters/', utilisateurs_views.student_course_chapters, name='student_course_chapters'),
+    
+    
+
+    
+    
+
+
+
+
+
+# Partie Url Concernant les Enseignant##########################################################################################
+
+    path('create_course/', utilisateurs_views.create_course, name='create_course'),
+    path('courses/', utilisateurs_views.course_list, name='course_list'),
+    path('create_chapitre/<int:course_id>/', utilisateurs_views.create_chapitre, name='create_chapitre'),
+    path('chapitres/<int:course_id>/', utilisateurs_views.chapter_list, name='chapter_list'),
+    path('create_video/<int:chapitre_id>/', utilisateurs_views.create_video, name='create_video'),
+    path('create_audio/<int:chapitre_id>/', utilisateurs_views.create_audio, name='create_audio'),
+    path('create_texte/<int:chapitre_id>/', utilisateurs_views.create_texte, name='create_texte'),
+    path('create_quiz/<int:chapitre_id>/', utilisateurs_views.create_quiz, name='create_quiz'),
+    path('create_question/<int:quiz_id>/', utilisateurs_views.create_question, name='create_question'),
+    path('quizzes/', utilisateurs_views.quiz_list, name='quiz_list'),
+    path('chapitre/<int:chapitre_id>/', utilisateurs_views.chapitre_detail, name='chapitre_detail'),
+    path('quiz/<int:quiz_id>/', utilisateurs_views.quiz_detail, name='quiz_detail'),
+    path('chapitre/<int:chapitre_id>/', utilisateurs_views.chapitre_detail_global, name='chapitre_detail_global'),
+
+
+
+
+#  Fin Partie Url Concernant les Enseignant##########################################################################################
+
+
+# Urls Pour les etudiants ##########################################################################################################
+
+
+
+    # path('courses/', utilisateurs_views.available_courses_student, name='available_courses_student'),
+    path('enroll/<int:course_id>/', utilisateurs_views.enroll_in_course_student, name='enroll_in_course_student'),
+    path('my_courses/', utilisateurs_views.student_courses_student, name='student_courses_student'),
+    path('course/<int:course_id>/chapters/', utilisateurs_views.course_chapters_student, name='course_chapters_student'),
+    path('chapter/<int:chapter_id>/', utilisateurs_views.chapter_details_student, name='chapter_details_student'),
+    path('quiz/<int:quiz_id>/', utilisateurs_views.quiz_detail_student, name='quiz_detail_student'),
+    
+    path('etudiant/courses/available/', utilisateurs_views.available_courses, name='available_courses'),  # Cours disponibles
+    path('etudiant/courses/enrolled/', utilisateurs_views.enrolled_courses, name='enrolled_courses'),  # Cours inscrits
+    path('courses/enroll/<int:course_id>/', utilisateurs_views.enroll_in_course, name='enroll_in_course'),  # Inscription à un cours
+
+
+
+
+
+#  Fin Urls Pour les etudiants ##########################################################################################################
+
+
+
+# Debuts URLS Pour les Tuteurs #########################################################################################################
+
+path('dashboard_tuteur', utilisateurs_views.dashboard_tuteur, name='dashboard_tuteur'),
+
+path('tuteur/etudiant/<int:etudiant_id>/courses/available/', utilisateurs_views.tuteur_available_courses, name='tuteur_available_courses'),
+    
+path('tuteur/etudiant/<int:etudiant_id>/courses/enroll/<int:course_id>/', utilisateurs_views.tuteur_enroll_in_course, name='tuteur_enroll_in_course'),
+    
+path('tuteur/etudiant/<int:etudiant_id>/courses/enrolled/', utilisateurs_views.tuteur_enrolled_courses, name='tuteur_enrolled_courses'),
+
+
+
+
+
+
+
+
+# Fin URLS Pour les Tuteurs #############################################################################################################
+
+
+
+
 
 
 

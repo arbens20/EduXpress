@@ -123,7 +123,7 @@ class Course(models.Model):
 class Enrollment(models.Model):
     student = models.ForeignKey(Etudiant, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    date_enrolled = models.DateField(auto_now_add=True)
+    date_enrolled = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.student.prenom} - {self.course.title}'
@@ -140,6 +140,7 @@ class Video(models.Model):
     chapitre = models.ForeignKey(Chapitre, on_delete=models.CASCADE)
     titre = models.CharField(max_length=500)
     contenu = models.FileField(upload_to='videos/')  
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.titre
@@ -149,6 +150,7 @@ class Audio(models.Model):
     chapitre = models.ForeignKey(Chapitre, on_delete=models.CASCADE)
     titre = models.CharField(max_length=500)
     contenu = models.FileField(upload_to='audios/')  
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.titre
@@ -158,6 +160,7 @@ class Texte(models.Model):
     chapitre = models.ForeignKey(Chapitre, on_delete=models.CASCADE)
     titre = models.CharField(max_length=500)
     contenu = models.TextField()  
+    date_added = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.titre

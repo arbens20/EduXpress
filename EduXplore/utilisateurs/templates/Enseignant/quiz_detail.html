@@ -1,0 +1,29 @@
+<h1>Détails du Quiz : {{ quiz.title }}</h1>
+<p>Créé par : {{ quiz.teacher.user.prenom }} {{ quiz.teacher.user.nom }}</p>
+<p>Date de création : {{ quiz.created_at }}</p>
+
+<h2>Questions</h2>
+{% for question in questions %}
+    <div class="question-box">
+        <p><strong>{{ forloop.counter }}. {{ question.text }}</strong> ({{ question.points }} points)</p>
+        <ul>
+            {% for choice in question.choices.all %}
+                <li>{% if choice.is_correct %}<strong>[Correct]</strong>{% endif %} {{ choice.text }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% empty %}
+    <p>Il n'y a pas encore de questions dans ce quiz.</p>
+{% endfor %}
+
+<a href="{% url 'create_question' quiz.id %}">Ajouter une nouvelle question</a>
+
+<style>
+    .question-box {
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+</style>
